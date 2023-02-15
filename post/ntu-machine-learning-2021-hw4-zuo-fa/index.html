@@ -1,0 +1,320 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NTU Machine Learning 2021 hw4做法 | init0xyz的自留地</title>
+<link rel="shortcut icon" href="https://init0xyz.github.io/favicon.ico?v=1676450033617">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://init0xyz.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="NTU Machine Learning 2021 hw4做法 | init0xyz的自留地 - Atom Feed" href="https://init0xyz.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="任务描述
+
+Classify the speakers of given features using self-attention
+
+代码细节
+首先先观察以下数据集，得到数据集的方式如下图(From NTU prof. Hung-yi L..." />
+    <meta name="keywords" content="机器学习" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://init0xyz.github.io">
+  <img class="avatar" src="https://init0xyz.github.io/images/avatar.png?v=1676450033617" alt="">
+  </a>
+  <h1 class="site-title">
+    init0xyz的自留地
+  </h1>
+  <p class="site-description">
+    自己选择的路，跪着也要走完。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              NTU Machine Learning 2021 hw4做法
+            </h2>
+            <div class="post-info">
+              <span>
+                2022-02-06
+              </span>
+              <span>
+                6 min read
+              </span>
+              
+                <a href="https://init0xyz.github.io/tag/cz_DMoRTd/" class="post-tag">
+                  # 机器学习
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="任务描述">任务描述</h1>
+<ul>
+<li>Classify the speakers of given features using self-attention</li>
+</ul>
+<h1 id="代码细节">代码细节</h1>
+<p>首先先观察以下数据集，得到数据集的方式如下图(From NTU prof. Hung-yi Lee)：<br>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gz44m2qdz1j30km0g1wgc.jpg" alt="" loading="lazy"><br>
+即先将采样得到的Wavform做DFT变成频谱，然后把整个频谱通过多个filter bank，得到所谓的mel-spectrogram，表示成一个Vetcor的形式，这个vector的维度表示成(seg_len,dim)的形式，注意对于不同的waveform，seg_len的长度可以不一样，但是表示每一个filter bank的dimension是一样的，在数据集中dim=40。<br>
+但是这里比较有意思的地方在于虽然每个waveform的seg_len是不一样的，但是我们在训练的时候为了将多个waveform打包成一个batch，在数据集中我们会将waveform的长度随机裁切，使最终的waveform的长度为128，于是在训练的时候每一个batch的数据可以表示成(batch_size,seg_len,dim)。<br>
+这部分的代码为：</p>
+<pre><code class="language-python">class myDataset(Dataset):
+  def __init__(self, data_dir, segment_len=128):
+    self.data_dir = data_dir
+    self.segment_len = segment_len
+ 
+    # Load the mapping from speaker neme to their corresponding id. 
+    mapping_path = Path(data_dir) / &quot;mapping.json&quot;
+    mapping = json.load(mapping_path.open())
+    self.speaker2id = mapping[&quot;speaker2id&quot;]
+ 
+    # Load metadata of training data.
+    metadata_path = Path(data_dir) / &quot;metadata.json&quot;
+    metadata = json.load(open(metadata_path))[&quot;speakers&quot;]
+ 
+    # Get the total number of speaker.
+    self.speaker_num = len(metadata.keys())
+    self.data = []
+    for speaker in metadata.keys():
+      for utterances in metadata[speaker]:
+        self.data.append([utterances[&quot;feature_path&quot;], self.speaker2id[speaker]])
+ 
+  def __len__(self):
+    return len(self.data)
+ 
+  def __getitem__(self, index):
+    feat_path, speaker = self.data[index]
+    # Load preprocessed mel-spectrogram.
+    mel = torch.load(os.path.join(self.data_dir, feat_path))
+ 
+    # Segmemt mel-spectrogram into &quot;segment_len&quot; frames.
+    if len(mel) &gt; self.segment_len:
+      # Randomly get the starting point of the segment.
+      start = random.randint(0, len(mel) - self.segment_len)
+      # Get a segment with &quot;segment_len&quot; frames.
+      mel = torch.FloatTensor(mel[start:start+self.segment_len])
+    else:
+      mel = torch.FloatTensor(mel)
+    # Turn the speaker id into long for computing loss later.
+    speaker = torch.FloatTensor([speaker]).long()
+    return mel, speaker
+ 
+  def get_speaker_number(self):
+    return self.speaker_num
+</code></pre>
+<p>之后就是调整hyper-parameters和修改模型的结构了，经过一些调整(以及使用confomer的提示)，我最终的模型结构如下：</p>
+<pre><code class="language-python">import torch
+import torch.nn as nn
+import torch.nn.functional as F
+from conformer.encoder import ConformerEncoder
+
+
+class Classifier(nn.Module):
+  def __init__(self, d_model=80, n_spks=600, dropout=0.1):
+    super().__init__()
+    # Project the dimension of features from that of input into d_model.
+    self.prenet = nn.Linear(40, d_model)
+    # Using ConformerEncoder to predict the speakers
+    self.encoder_layer = ConformerEncoder(
+      input_dim=d_model,
+      encoder_dim=128,
+      num_layers=3,
+      num_attention_heads=4,
+      feed_forward_expansion_factor=4,
+      conv_expansion_factor=2,
+      input_dropout_p=0.1,
+      feed_forward_dropout_p=0.1,
+      attention_dropout_p=0.1,
+      conv_dropout_p=0.1,
+      conv_kernel_size=31,
+      half_step_residual=True,        
+    )
+
+    # Project the the dimension of features from d_model into speaker nums.
+    self.pred_layer = nn.Sequential(
+      nn.Linear(128, n_spks),
+    )
+
+  def forward(self, mels):
+    &quot;&quot;&quot;
+    args:
+      mels: (batch size, length, 40)
+    return:
+      out: (batch size, n_spks)
+    &quot;&quot;&quot;
+    # out: (batch size, length, d_model)
+    out = self.prenet(mels)
+    # The encoder layer expect features in the shape of (batch,time,dim).
+    length = int(out.shape[1])*torch.ones(int(out.shape[0]),dtype=torch.long)
+    out, _ = self.encoder_layer(out,length)
+
+    # Output shpe of encoder: (batch, out_channels, time)
+    # mean pooling
+    stats = out.mean(dim=1)
+
+    # out: (batch, n_spks)
+    out = self.pred_layer(stats)
+    return out
+</code></pre>
+<p>这里首先是把encoder_layer换成conformer的encoder layer，这里需要几个hyper-parameters就是Encoder的layer数目(我设置为了3)，以及attention-heads的数目，我设置为了4，其他就只需要注意模型的前后维度一致就行，整个模型无非就是FC layers-Confromer_Encoder-FC layers这样的结构。<br>
+当然模型训练的时候也有一些tips，比如原始给出的training过程中有一个很复杂的learning rate warm up，这个我也直接保留了下来，整个模型的optimizer和learning rate我都没咋调，直接硬train一发也能轻松过strong baseline。<br>
+最终训练的模型在Validation Set上的Accuracy为0.9002，但是这里又有一个比较有意思的地方是为啥用这个模型做Inference，在Kaggle上的准确率在0.96左右，准确率一下提升了6 percent？这里的原因应该是因为前面为了加速训练，整个batch里面的sequence length都设置为128，但是后面做inference的时候可以考虑整个sequence的长度，这也可以在做inference时的dataset设置的代码中看出来：</p>
+<pre><code class="language-python">class InferenceDataset(Dataset):
+  def __init__(self, data_dir):
+    testdata_path = Path(data_dir) / &quot;testdata.json&quot;
+    metadata = json.load(testdata_path.open())
+    self.data_dir = data_dir
+    self.data = metadata[&quot;utterances&quot;]
+
+  def __len__(self):
+    return len(self.data)
+
+  def __getitem__(self, index):
+    utterance = self.data[index]
+    feat_path = utterance[&quot;feature_path&quot;]
+    mel = torch.load(os.path.join(self.data_dir, feat_path))
+
+    return feat_path, mel
+
+def inference_collate_batch(batch):
+  &quot;&quot;&quot;Collate a batch of data.&quot;&quot;&quot;
+  feat_paths, mels = zip(*batch)
+
+  return feat_paths, torch.stack(mels)
+</code></pre>
+<p>最终在Kaggle上的Public Score为0.96095，Private Score为0.95777，这只是单模型的结果，没有做Ensemble也没有特别finetune参数。</p>
+<h1 id="references">References</h1>
+<ul>
+<li>Pytorch implementation of Conformer: <a href="https://github.com/sooftware/conformer">https://github.com/sooftware/conformer</a></li>
+<li>Gulati A, Qin J, Chiu C C, et al. Conformer: Convolution-augmented transformer for speech recognition[J]. arXiv preprint arXiv:2005.08100, 2020.</li>
+<li>NTU Machine Learning 2021 HW4 example code: <a href="https://colab.research.google.com/github/ga642381/ML2021-Spring/blob/main/HW04/HW04.ipynb">https://colab.research.google.com/github/ga642381/ML2021-Spring/blob/main/HW04/HW04.ipynb</a></li>
+<li>NTU Machine Learning 2021: <a href="https://speech.ee.ntu.edu.tw/~hylee/ml/2021-spring.php">https://speech.ee.ntu.edu.tw/~hylee/ml/2021-spring.php</a></li>
+</ul>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%BB%BB%E5%8A%A1%E6%8F%8F%E8%BF%B0">任务描述</a></li>
+<li><a href="#%E4%BB%A3%E7%A0%81%E7%BB%86%E8%8A%82">代码细节</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://init0xyz.github.io/post/jian-yi-cnn-de-shi-xian-with-pytorch/">
+              <h3 class="post-title">
+                简易CNN的实现(with Pytorch)
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank"> &nbsp; Gridea</a>
+  <a class="rss" href="https://init0xyz.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

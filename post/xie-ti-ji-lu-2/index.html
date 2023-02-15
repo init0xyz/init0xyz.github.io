@@ -1,0 +1,450 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>写题记录2 | init0xyz的自留地</title>
+<link rel="shortcut icon" href="https://init0xyz.github.io/favicon.ico?v=1676450033617">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://init0xyz.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="写题记录2 | init0xyz的自留地 - Atom Feed" href="https://init0xyz.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="记录一些不太会的题目
+
+1
+Online Judge
+原题：UVA658
+这题我们首先想到是先状压，再建图，求个最短路，但是会发现建图的话最坏情况点能达到2n2^n2n级别，这空间可能过不去。于是我们转换成类BFS+SPFA的方式，即每次更..." />
+    <meta name="keywords" content="ACM" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://init0xyz.github.io">
+  <img class="avatar" src="https://init0xyz.github.io/images/avatar.png?v=1676450033617" alt="">
+  </a>
+  <h1 class="site-title">
+    init0xyz的自留地
+  </h1>
+  <p class="site-description">
+    自己选择的路，跪着也要走完。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              写题记录2
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-08-24
+              </span>
+              <span>
+                9 min read
+              </span>
+              
+                <a href="https://init0xyz.github.io/tag/TTWj20AVs/" class="post-tag">
+                  # ACM
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>记录一些不太会的题目</p>
+<!---more--->
+<h2 id="1">1</h2>
+<p><a href="https://onlinejudge.org/index.php?option=com_onlinejudge&amp;Itemid=8&amp;page=show_problem&amp;problem=599">Online Judge</a></p>
+<p>原题：UVA658</p>
+<p>这题我们首先想到是先状压，再建图，求个最短路，但是会发现建图的话最坏情况点能达到<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">2^n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.664392em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span></span></span></span></span></span></span></span>级别，这空间可能过不去。于是我们转换成类BFS+SPFA的方式，即每次更新节点的时候都把可能的边转换遍历一次（反正最多才100），再在这个所谓的隐式图上跑个SPFA就好了。</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 2e6+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+
+int n,m,cost[120],vis[N],dis[N];
+string op[120],to[120];
+queue&lt;int&gt; qu;
+
+bool check(int now,string s){
+  for(int i = 0;i &lt; s.size();i++){
+    int sta = (now&amp;(1&lt;&lt;i));
+    if(s[i] == '-' and sta) return false;
+    if(s[i] == '+' and !sta) return false;
+  }
+  return true;
+}
+
+int change(int now,string s){
+  int ans = 0;
+  for(int i = 0;i &lt; s.size();i++){
+    int old = now&amp;(1&lt;&lt;i);
+    if(s[i] == '0' and old) ans += (1&lt;&lt;i);
+    if(s[i] == '+') ans += (1&lt;&lt;i);
+  }
+  return ans;
+}
+
+void spfa(int st){
+  memset(vis,0,sizeof(vis));
+  for(int i = 0;i &lt; (1&lt;&lt;n);i++) dis[i] = 1e9;
+  dis[st] = 0;
+  qu.push(st);vis[st] = 1;
+  while(!qu.empty()){
+    int now = qu.front();vis[now] ^= 1;qu.pop();
+    for(int i = 1;i &lt;= m;i++){
+      if(check(now,op[i])){
+			int nex = change(now,to[i]);
+			if(dis[nex] &gt; dis[now]+cost[i]){
+			  dis[nex] = dis[now] + cost[i];
+			  if(!vis[nex]) qu.push(nex),vis[nex] = 1;
+				}
+      }
+    }
+  }
+}
+
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  int kase = 1;
+  while(cin&gt;&gt;n&gt;&gt;m and n){
+    for(int i = 1;i &lt;= m;i++){
+      cin&gt;&gt;cost[i]&gt;&gt;op[i]&gt;&gt;to[i];
+    }
+    spfa((1&lt;&lt;n)-1);
+    printf(&quot;Product %d\n&quot;,kase++);
+    if(dis[0] == 1e9) cout&lt;&lt;&quot;Bugs cannot be fixed.&quot;&lt;&lt;endl;
+    else printf(&quot;Fastest sequence takes %d seconds.\n&quot;,dis[0]);
+    cout&lt;&lt;endl;
+  }
+  return 0;
+}
+</code></pre>
+<h2 id="2">2</h2>
+<p><a href="https://onlinejudge.org/index.php?option=onlinejudge&amp;Itemid=8&amp;page=show_problem&amp;category=0&amp;problem=4512">Online Judge</a></p>
+<p>题意：给了36张牌，分成9堆，每次都可以取两张位于堆顶且大小相同的牌，问取到一张不剩的概率</p>
+<p>发现自己的概率还停留在高中的sb思维。。。只会无脑求出符合题意的事件次数除以总事件数，然而在这里肯定不行，复杂度太大。</p>
+<p>于是我们就得转换一下思路，我这里用了字符串表示状态套一层unordered_map当数组用，用<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>p</mi><mo>(</mo><mi>s</mi><mi>t</mi><mi>a</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">dp(sta)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">p</span><span class="mopen">(</span><span class="mord mathdefault">s</span><span class="mord mathdefault">t</span><span class="mord mathdefault">a</span><span class="mclose">)</span></span></span></span>表示在sta下满足题意的概率，那么对于从状态<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mn>1</mn></msub><mo>→</mo><msub><mi>s</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">s_1\rightarrow s_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，令p为转移到<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">s_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>的概率，那么显然<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>s</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">s_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>对<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>p</mi><mo>(</mo><msub><mi>s</mi><mn>1</mn></msub><mo>)</mo></mrow><annotation encoding="application/x-tex">dp(s_1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">p</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>的贡献就为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mi>p</mi><mo>(</mo><msub><mi>s</mi><mn>2</mn></msub><mo>)</mo><mo>×</mo><mi>p</mi></mrow><annotation encoding="application/x-tex">dp(s_2)\times p</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">d</span><span class="mord mathdefault">p</span><span class="mopen">(</span><span class="mord"><span class="mord mathdefault">s</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">p</span></span></span></span>，再写一下记忆化搜索就好了。</p>
+<p>同时还要注意一下输入的问题,题目要求连续输入多个数据且中间没有间隔,学到了一个方法就是写一个bool函数,同时也注意到cin&gt;&gt;这个表达式也是有返回值的。。。</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 1e6+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+
+stack&lt;int&gt; qu[20];
+string ca;
+dd ans;
+unordered_map&lt;string,dd&gt; vis;
+int n,fac[100];
+
+dd dfs(string sta){
+  if(sta == &quot;000000000&quot;){return 1.0;}
+  if(vis.count(sta)) return vis[sta];
+  int cnt = 0;
+  for(int i = 1;i &lt;= 9;i++){
+    if(qu[i].empty()) continue;
+    for(int j = i+1;j &lt;= 9;j++){
+      if(qu[j].empty()) continue;
+      if(qu[i].top() == qu[j].top()) cnt++;
+    }
+  }
+  if(cnt == 0) return 0.0;
+  for(int i = 1;i &lt;= 9;i++){
+    if(qu[i].empty()) continue;
+    for(int j = i+1;j &lt;= 9;j++){
+      if(qu[j].empty()) continue;
+      int a = qu[i].top(),b = qu[j].top();
+      if(a == b){
+	qu[i].pop();qu[j].pop();
+	string nex = sta;
+	nex[i-1] = sta[i-1]-1;
+	nex[j-1] = sta[j-1]-1;
+	vis[sta] += dfs(nex)/dd(cnt);
+	qu[i].push(a);qu[j].push(b);
+      }
+    }
+  }
+  return vis[sta];
+}
+
+bool read(){
+  for(int i = 1;i &lt;= 9;i++){
+    while(!qu[i].empty()) qu[i].pop();
+  }
+  for(int i = 1;i &lt;= 9;i++){
+    for(int j = 1;j &lt;= 4;j++){
+      if(!(cin&gt;&gt;ca)) return false;
+      if(ca[0] == 'J') qu[i].push(11);
+      else if(ca[0] == 'Q') qu[i].push(12);
+      else if(ca[0] == 'K') qu[i].push(13);
+      else if(ca[0] == 'A') qu[i].push(14);
+      else if(ca[0] == 'T') qu[i].push(10);
+      else {qu[i].push(ca[0]-'0');}      
+    }
+  }
+  return true;
+}
+
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  while(read()){
+    vis.clear();
+    printf(&quot;%.6f\n&quot;,dfs(&quot;444444444&quot;));    
+  }
+  return 0;
+}
+</code></pre>
+<h2 id="3">3</h2>
+<p>原题：UVA1660</p>
+<p>题意：给出n个点的无向图<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>n</mi><mo>≤</mo><mn>50</mn><mo>)</mo></mrow><annotation encoding="application/x-tex">(n\le50)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">5</span><span class="mord">0</span><span class="mclose">)</span></span></span></span>，求最少删除多少个点，使整张图不联通</p>
+<p>我们可以先选出两个点<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mo separator="true">,</mo><mi>t</mi></mrow><annotation encoding="application/x-tex">s,t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">s</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">t</span></span></span></span>，整张图不联通只需要使<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>s</mi><mo separator="true">,</mo><mi>t</mi></mrow><annotation encoding="application/x-tex">s,t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.80952em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">s</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">t</span></span></span></span>不联通，等价于一个二分图划分，我们把其他点拆点，再连边，最后跑个Dinic求最小割后取最小值即可。</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 1e5+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+
+string pa;
+int head[N],n,m,s,t,vis[N],d[N],cur[N],cnt=1,u,v,a[10000],b[10000];
+ll w;
+struct node{
+  int to,nex;
+  ll cap,flow;
+}edge[N];
+
+void add_edge(int u,int v,ll w){
+  edge[++cnt].to = v;
+  edge[cnt].cap = w;
+  edge[cnt].flow = 0;
+  edge[cnt].nex = head[u];
+  head[u] = cnt;
+  edge[++cnt].to = u;
+  edge[cnt].cap = 0;
+  edge[cnt].flow = 0;
+  edge[cnt].nex = head[v];
+  head[v] = cnt;
+}
+
+bool bfs(){
+  for(int i = 1;i &lt;= (2*n+5);i++) vis[i] = 0;
+  queue&lt;int&gt; qu;  
+  qu.push(s);
+  d[s] = 0;
+  vis[s] = 1;
+  cur[s] = head[s];
+  while(!qu.empty()){
+    int now = qu.front();qu.pop();
+    for(int i = head[now];i;i = edge[i].nex){
+      int nex = edge[i].to;
+      if(!vis[nex] and edge[i].cap &gt; edge[i].flow){
+	vis[nex] = 1;
+	cur[nex] = head[nex];
+	d[nex] = d[now] + 1;
+	qu.push(nex);
+	if(nex == t) return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+ll dfs(int x,ll a){
+  if(x == t or a == 0) return a;
+  ll flow = 0,f;
+  for(int i = cur[x];i and a;i = edge[i].nex){
+    cur[x] = i;
+    int nex = edge[i].to;
+    if(d[x]+1 == d[nex] and edge[i].cap &gt; edge[i].flow){
+      f = dfs(nex,min(a,edge[i].cap-edge[i].flow));
+      edge[i].flow += f;
+      edge[i^1].flow -= f;
+      flow += f;
+      a -= f;
+    }
+  }
+  return flow;
+}
+
+int read(){
+  int x=0,f=1;char ch='[';
+  while(!isdigit(ch)){ch=getchar();if(ch=='-')f=-1;}
+  while(isdigit(ch)){x=x*10+ch-'0';ch=getchar();}
+  return x*f;
+}
+
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  while(cin&gt;&gt;n&gt;&gt;m){
+    for(int i = 1;i &lt;= m;i++){
+      a[i] = read()+1;b[i] = read()+1;
+    }
+    int ans = inf;
+    for(s = 1;s &lt;= n;s++){
+      for(t = 1;t &lt;= n;t++){
+	if(s == t) continue;
+	memset(head,0,sizeof(head));
+	cnt = 1;
+	for(int i = 1;i &lt;= n;i++){
+	  if(i == s or i == t) add_edge(i,i+n,inf-1);
+	  else add_edge(i,i+n,1);
+	}
+	for(int i = 1;i &lt;= m;i++){
+	  add_edge(a[i]+n,b[i],inf-1);
+	  add_edge(b[i]+n,a[i],inf-1);
+	}
+	int flow = 0;
+	while(bfs()){
+	  flow += dfs(s,inf);
+	}
+	ans = min(ans,flow);
+      }
+    }
+    if(ans &gt; n) ans = n;
+    cout&lt;&lt;ans&lt;&lt;endl;
+  }
+  return 0;
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#1">1</a></li>
+<li><a href="#2">2</a></li>
+<li><a href="#3">3</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://init0xyz.github.io/post/xie-ti-ji-lu-1/">
+              <h3 class="post-title">
+                写题记录1
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank"> &nbsp; Gridea</a>
+  <a class="rss" href="https://init0xyz.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

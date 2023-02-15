@@ -1,0 +1,252 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Codeforces Round 654 Div.2 题解 | init0xyz的自留地</title>
+<link rel="shortcut icon" href="https://init0xyz.github.io/favicon.ico?v=1676450033617">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://init0xyz.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Codeforces Round 654 Div.2 题解 | init0xyz的自留地 - Atom Feed" href="https://init0xyz.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="感觉自己每次打CF都在划水。。。
+
+A
+很显然答案就是⌈n2⌉\lceil \frac{n}{2} \rceil⌈2n​⌉
+B
+分情况讨论，当 n&gt;rn &gt; rn&gt;r 时显然答案就是r×(r+1)2\frac{r\time..." />
+    <meta name="keywords" content="ACM" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://init0xyz.github.io">
+  <img class="avatar" src="https://init0xyz.github.io/images/avatar.png?v=1676450033617" alt="">
+  </a>
+  <h1 class="site-title">
+    init0xyz的自留地
+  </h1>
+  <p class="site-description">
+    自己选择的路，跪着也要走完。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Codeforces Round 654 Div.2 题解
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-08-24
+              </span>
+              <span>
+                3 min read
+              </span>
+              
+                <a href="https://init0xyz.github.io/tag/TTWj20AVs/" class="post-tag">
+                  # ACM
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>感觉自己每次打CF都在划水。。。</p>
+<!---more--->
+<h1 id="a">A</h1>
+<p>很显然答案就是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>⌈</mo><mfrac><mi>n</mi><mn>2</mn></mfrac><mo>⌉</mo></mrow><annotation encoding="application/x-tex">\lceil \frac{n}{2} \rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span></p>
+<h1 id="b">B</h1>
+<p>分情况讨论，当 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>&gt;</mo><mi>r</mi></mrow><annotation encoding="application/x-tex">n &gt; r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span></span></span></span> 时显然答案就是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mrow><mi>r</mi><mo>×</mo><mo>(</mo><mi>r</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{r\times (r+1)}{2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.355em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mbin mtight">×</span><span class="mopen mtight">(</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，然后再观察一下数据。。。<br>
+另一种的答案就是<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mfrac><mrow><mi>n</mi><mo>×</mo><mo>(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo>)</mo></mrow><mn>2</mn></mfrac><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{n\times (n-1)}{2}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.355em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mbin mtight">×</span><span class="mopen mtight">(</span><span class="mord mathdefault mtight">n</span><span class="mbin mtight">−</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。。。</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 1e5+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+
+int t;
+ll n,r;
+
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  scanf(&quot;%d&quot;,&amp;t);
+  while(t--){
+    scanf(&quot;%lld %lld&quot;,&amp;n,&amp;r);
+    if(n &lt;= r){
+      printf(&quot;%lld\n&quot;,(n*(n-1)/2)+1);
+    }
+    else{
+      printf(&quot;%lld\n&quot;,r*(r+1)/2);
+    }
+  }
+  return 0;
+}
+</code></pre>
+<h1 id="c">C</h1>
+<p>题意：</p>
+<p>给定了a个第一类糖果和b个第二类糖果，分别有n个第一种人和m个第二种人。</p>
+<p>取糖果的规则时：</p>
+<p>假设两种糖果当前数目为v和c：</p>
+<ol>
+<li>当 v &gt; c时，第一种人选第一种糖果，第二种人选第二种糖果</li>
+<li>反之，第一种人选第二种糖果，第二种人选第一种糖果。</li>
+</ol>
+<p>我们可以发现一个性质：第二种人总是选择当前最少的糖果，所以显然第二种人能得到的糖果最多有min(a,b)种，所以我们只需要判断 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>b</mi><mo>≤</mo><mi>min</mi><mo>⁡</mo><mo>(</mo><mi>a</mi><mo separator="true">,</mo><mi>b</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">b \le \min(a,b)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83041em;vertical-align:-0.13597em;"></span><span class="mord mathdefault">b</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mop">min</span><span class="mopen">(</span><span class="mord mathdefault">a</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">b</span><span class="mclose">)</span></span></span></span>以及<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>n</mi><mo>+</mo><mi>m</mi><mo>≤</mo><mi>a</mi><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">n + m \le a+b</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.7719400000000001em;vertical-align:-0.13597em;"></span><span class="mord mathdefault">m</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">a</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">b</span></span></span></span> 即可</p>
+<h1 id="d">D</h1>
+<p>构造题，最后猜一下规律。。。</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 1e5+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+ 
+int table[320][320],t,n,k;
+ 
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  scanf(&quot;%d&quot;,&amp;t);
+  while(t--){
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;k);
+    memset(table,0,sizeof(table));
+    printf(&quot;%d\n&quot;,k%n == 0 ? 0 : 2);
+    int p = 0,q = 0;
+    while(k--){
+      table[p+1][q+1] = 1;
+      p++;q = (q+1)%n;
+      if(p == n){
+				p = 0;q = (q+1)%n;
+      }
+    }
+    for(int i = 1;i &lt;= n;i++){
+      for(int j = 1;j &lt;= n;j++) printf(&quot;%d&quot;,table[i][j]);
+      printf(&quot;\n&quot;);
+    }
+  }
+  return 0;
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#a">A</a></li>
+<li><a href="#b">B</a></li>
+<li><a href="#c">C</a></li>
+<li><a href="#d">D</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank"> &nbsp; Gridea</a>
+  <a class="rss" href="https://init0xyz.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>

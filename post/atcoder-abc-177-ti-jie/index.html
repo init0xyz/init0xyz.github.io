@@ -1,0 +1,371 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Atcoder ABC 177 题解 | init0xyz的自留地</title>
+<link rel="shortcut icon" href="https://init0xyz.github.io/favicon.ico?v=1676450033617">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://init0xyz.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="Atcoder ABC 177 题解 | init0xyz的自留地 - Atom Feed" href="https://init0xyz.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="ABC就不多说了。。。
+
+D
+显然可以一个带权值的并查集就可以维护了
+#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef uns..." />
+    <meta name="keywords" content="ACM" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://init0xyz.github.io">
+  <img class="avatar" src="https://init0xyz.github.io/images/avatar.png?v=1676450033617" alt="">
+  </a>
+  <h1 class="site-title">
+    init0xyz的自留地
+  </h1>
+  <p class="site-description">
+    自己选择的路，跪着也要走完。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Atcoder ABC 177 题解
+            </h2>
+            <div class="post-info">
+              <span>
+                2021-08-24
+              </span>
+              <span>
+                7 min read
+              </span>
+              
+                <a href="https://init0xyz.github.io/tag/TTWj20AVs/" class="post-tag">
+                  # ACM
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>ABC就不多说了。。。</p>
+<!---more--->
+<h2 id="d">D</h2>
+<p>显然可以一个带权值的并查集就可以维护了</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 3e5+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+int fa[N],siz[N];
+int find(int x){return fa[x] == x ? x : fa[x] = find(fa[x]);}
+void merge(int u,int v){
+  int x = find(u),y = find(v);
+  if(x != y){
+    fa[x] = y;
+    siz[y] += siz[x];
+  }
+}
+int n,m,a,b;
+int main(){
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  cin&gt;&gt;n&gt;&gt;m;
+  for(int i = 1;i &lt;= n;i++) fa[i] = i,siz[i] = 1;
+  for(int i = 1;i &lt;= m;i++){
+    cin&gt;&gt;a&gt;&gt;b;
+    merge(a,b);
+  }
+  int ans = 0;
+  for(int i = 1;i &lt;= n;i++){
+    ans = max(ans,siz[find(i)]);
+  }
+  cout&lt;&lt;ans&lt;&lt;endl;
+  return 0;
+}
+</code></pre>
+<h2 id="e">E</h2>
+<p>用类似筛法和多数gcd处理一下就好了</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 2e6+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+int n,vis[N],vis2[N];
+ll gcd(ll a,ll b){
+  if(b==0) return a;
+  else return gcd(b,a%b);
+}
+ll a[N];
+int main(){
+  ios::sync_with_stdio(false);
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  ll now = 0;
+  cin&gt;&gt;n;
+  bool paok = true;
+  bool seok = true;
+  bool have1 = false;
+  for(int i = 1;i &lt;= n;i++) {cin&gt;&gt;a[i];}
+  for(int i = 1;i &lt;= n;i++){
+    now = gcd(now,a[i]);
+    vis[a[i]]++;
+  }
+  for(int i = 2;i &lt;= 1e6+100;i++){
+    for(int j = i;j &lt;= 1e6+100;j+=i){
+      if(vis[j]) vis2[i]+=vis[j];
+    }
+  }
+  for(int i = 2;i &lt;= 1e6+100;i++){
+    if(vis2[i] &gt; 1) {paok = false;break;}
+  }
+  if(have1) paok = false;
+  if(now != 1) seok = false;
+  if(paok) cout&lt;&lt;&quot;pairwise coprime&quot;&lt;&lt;endl;
+  else if(seok or have1) cout&lt;&lt;&quot;setwise coprime&quot;&lt;&lt;endl;
+  else cout&lt;&lt;&quot;not coprime&quot;&lt;&lt;endl;
+  return 0;
+}
+</code></pre>
+<h2 id="f">F</h2>
+<p>这题的话。。。如果范围是1e3左右的话就是个很裸的DP了，可是对于2e5这种级别的数据，只能考虑去用数据结构维护了。</p>
+<p>于是我们可以维护一个线段树，维护每一层的<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mn>1</mn><mo separator="true">,</mo><mi>W</mi><mo>]</mo></mrow><annotation encoding="application/x-tex">[1,W]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="mclose">]</span></span></span></span>的区间，对于给定的A和B，我们可以对<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mn>1</mn><mo separator="true">,</mo><mi>A</mi><mo>)</mo></mrow><annotation encoding="application/x-tex">[1,A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault">A</span><span class="mclose">)</span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>(</mo><mi>B</mi><mo separator="true">,</mo><mi>W</mi><mo>]</mo></mrow><annotation encoding="application/x-tex">(B,W]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="mclose">]</span></span></span></span>这个区间直接+1，而对其中的数暴力转移，对于一个为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>[</mo><mi>l</mi><mo separator="true">,</mo><mi>r</mi><mo>]</mo></mrow><annotation encoding="application/x-tex">[l,r]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.02778em;">r</span><span class="mclose">]</span></span></span></span>的区间，可以用<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>f</mi><mo>[</mo><mi>i</mi><mo>]</mo><mo>=</mo><mi>f</mi><mo>[</mo><mi>l</mi><mo>−</mo><mn>1</mn><mo>]</mo><mo>+</mo><mi>i</mi><mo>−</mo><mi>l</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">f[i] = f[l-1] + i-l+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mopen">[</span><span class="mord mathdefault">i</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="mopen">[</span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.74285em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>来转移，同时还要询问的时候维护最小值就好了</p>
+<pre><code class="language-cpp">#include&lt;bits/stdc++.h&gt;
+#define inf 0x3f3f3f3f
+using namespace std;
+typedef unsigned long long ull;
+typedef long long ll;
+typedef double dd;
+const int N = 2e5+5;
+const dd eps = 1e-8;
+const int mod = 1e9+7;
+ll ans[N],h,w,a,b;
+inline int lc(int x){return x&lt;&lt;1;}
+inline int rc(int x){return x&lt;&lt;1|1;}
+
+struct node{
+  int l,r;
+  ll segl = 0,segmin = 0,lazy = 0;
+  bool flag = false;
+}t[N&lt;&lt;2];
+
+void build(int p,int l,int r){
+  t[p].l = l;t[p].r = r;
+  if(l == r) return;
+  int mid = (l+r)&gt;&gt;1;
+  build(lc(p),l,mid);build(rc(p),mid+1,r);
+}
+
+void push_down(int p){
+  if(t[p].flag){
+    for(int i = lc(p);i &lt;= rc(p);i++){
+      t[i].segl = t[i].segmin = t[p].segl + t[i].l - t[p].l;
+      t[i].lazy = 0;t[i].flag = true;
+    }
+  }
+  else if(t[p].lazy){
+    for(int i = lc(p);i &lt;= rc(p);i++){
+      t[i].segl += t[p].lazy;
+      t[i].segmin += t[p].lazy;
+      t[i].lazy += t[p].lazy;
+    }
+  }
+  t[p].flag = false;t[p].lazy = 0;
+}
+
+void update(int p,int l,int r,ll val){
+  if(t[p].l &gt;= l and t[p].r &lt;= r){
+    t[p].segl = t[p].segmin = val + t[p].l - l + 1;
+    t[p].flag = true;t[p].lazy = 0;return;
+  }
+  push_down(p);
+  int mid = (t[p].l + t[p].r)&gt;&gt;1;
+  if(l &lt;= mid) update(lc(p),l,r,val);
+  if(mid + 1 &lt;= r) update(rc(p),l,r,val);
+  t[p].segl = t[lc(p)].segl;
+  t[p].segmin = min(t[lc(p)].segmin,t[rc(p)].segmin);
+}
+
+void add(int p,int l,int r){
+  if(t[p].l &gt;= l and t[p].r &lt;= r){
+    t[p].lazy++;t[p].segl++;t[p].segmin++;return;
+  }
+  push_down(p);
+  int mid = (t[p].l + t[p].r)&gt;&gt;1;
+  if(l &lt;= mid) add(lc(p),l,r);
+  if(mid+1 &lt;= r) add(rc(p),l,r);
+  t[p].segl = t[lc(p)].segl;
+  t[p].segmin = min(t[lc(p)].segmin,t[rc(p)].segmin);
+}
+
+ll query(int p,int l,int r){
+  if(r &lt; 1 or l &gt; w) return inf;
+  if(t[p].l &gt;= l and t[p].r &lt;= r) return t[p].segmin;
+  push_down(p);
+  ll ans = inf;
+  int mid = (t[p].l + t[p].r)&gt;&gt;1;
+  if(l &lt;= mid) ans = min(ans,query(lc(p),l,r));
+  if(mid+1 &lt;= r) ans = min(ans,query(rc(p),l,r));
+  return ans;
+}
+int main(){
+  ios::sync_with_stdio(false);
+  // freopen(&quot;input.txt&quot;,&quot;r&quot;,stdin);
+  cin&gt;&gt;h&gt;&gt;w;
+  build(1,1,w);
+  memset(ans,inf,sizeof(ans));
+  for(int i = 1;i &lt;= h;i++){
+    cin&gt;&gt;a&gt;&gt;b;
+    if(a &gt; 1) add(1,1,a-1);
+    if(b &lt; w) add(1,b+1,w);
+    ll L = query(1,a-1,a-1);
+    update(1,a,b,L);
+    ans[i] = min(ans[i],query(1,1,w));
+    if(ans[i] &gt; h+w) ans[i] = -1;
+  }
+  for(int i = 1;i &lt;= h;i++){
+    cout&lt;&lt;ans[i]&lt;&lt;endl;
+  }
+  return 0;
+}
+</code></pre>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li>
+<ul>
+<li><a href="#d">D</a></li>
+<li><a href="#e">E</a></li>
+<li><a href="#f">F</a></li>
+</ul>
+</li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://init0xyz.github.io/post/xie-ti-ji-lu-2/">
+              <h3 class="post-title">
+                写题记录2
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank"> &nbsp; Gridea</a>
+  <a class="rss" href="https://init0xyz.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
